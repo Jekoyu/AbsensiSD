@@ -4,10 +4,8 @@ include 'env.php';
 include 'slicing/head.php';
 include 'slicing/nav.php';
 include 'slicing/topbar.php';
-
-// Aktifkan error reporting untuk menangkap kesalahan
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 ?>
 
@@ -78,9 +76,9 @@ if (isset($_POST['nis'])) {
 
         $sql = "DELETE FROM rfid_history WHERE rfid_id='$rfid_id'";
         if (mysqli_query($conn, $sql)) {
-            header("siswa.php");
+            header('Location: siswa.php');
         } else {
-            echo "Error menghapus RFID: " . mysqli_error($conn);
+            echo "Error mengshapus RFID: " . mysqli_error($conn);
         }
     } else {
         echo "Error menambahkan data siswa: " . mysqli_error($conn);
