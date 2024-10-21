@@ -28,7 +28,7 @@ include 'slicing/topbar.php';
 
           <tbody>
             <?php
-            $q = "select * from siswa";
+            $q = "SELECT * FROM siswa";
             $result = $conn->query($q);
             $no = 1;
             if ($result->num_rows > 0) {
@@ -41,8 +41,17 @@ include 'slicing/topbar.php';
                   <td><?php echo $row['nama'] ?></td>
                   <td><?php echo $row['kelas'] ?></td>
                   <td>
-                    <a href="edit.php?id=<?php echo $row['nisn'] ?>" class="btn btn-warning">Edit</a>
-                    <a href="delete.php?id=<?php echo $row['nisn'] ?>" class="btn btn-danger">Delete</a>
+                    <!-- Tombol Edit dan Delete dengan form inline -->
+                    <div class="d-flex">
+                      <form action="siswaedit.php" method="POST" class="mr-2">
+                        <input type="hidden" name="nisn" value="<?php echo $row['nisn']; ?>">
+                        <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+                      </form>
+                      <form action="" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+                        <input type="hidden" name="delete_nisn" value="<?php echo $row['nisn']; ?>">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
             <?php
@@ -55,10 +64,24 @@ include 'slicing/topbar.php';
   </div>
 
 </div>
-<?php
 
+<?php
+// Kode untuk menghapus data
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_nisn'])) {
+  $delete_nisn = $_POST['delete_nisn'];
+  $q = "DELETE FROM siswa WHERE nisn='$delete_nisn'";
+  if (mysqli_query($conn, $q)) {
+    echo "<script>alert('Data siswa berhasil dihapus'); window.location.href='siswa.php';</script>";
+    exit();
+  } else {
+    echo "Error menghapus data siswa: " . mysqli_error($conn);
+  }
+}
+
+mysqli_close($conn);
 include 'slicing/footer.php';
-include 'slicing/script.php'; ?>
+include 'slicing/script.php';
+?>
 
 
 <!-- Page level custom scripts -->
