@@ -1,172 +1,107 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+include 'env.php';
+include 'slicing/head.php';
+include 'slicing/nav.php';
+include 'slicing/topbar.php';
+include 'db.php';
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+$q = "select rfid_id from rfid_history order by time desc limit 1";
+$r = mysqli_query($conn, $q);
+$rfid = mysqli_fetch_assoc($r);
 
-    <title>SB Admin 2 - Tables</title>
+if ($rfid != null) {
+    $rfid_id = $rfid['rfid_id'];
+    // echo $rfid_id;
 
-    <!-- Custom fonts for this template -->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    $q = "select * from siswa where rfid_id='$rfid_id'";
+    $r = mysqli_query($conn, $q);
+    $siswa = mysqli_fetch_assoc($r);
+    // echo "<pre>";
+    // print_r($siswa);
+    $nisn = $siswa['nisn'];
+    $nis = $siswa['nis'];
+    $nama = $siswa['nama'];
+    $kelas = $siswa['kelas'];
+} else {
+    $nisn = "";
+    $nis = "";
+    $nama = "";
+    $kelas = "";
+    $rfid_id = "";
+}
 
-    <!-- Custom styles for this page -->
-    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap4.min.css" rel="stylesheet">
 
-    <!-- Datepicker CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $q = "insert into absen(nisn) values('$nisn')";
+    $r = mysqli_query($conn, $q);
+    if ($r) {
+        $q1 = "delete from rfid_history where rfid_id='$rfid_id'";
+        $r1 = mysqli_query($conn, $q1);
+        if ($r1) {
+            echo "<script>alert('Berhasil absen')</script>";
+            echo "<script>location.href='absensi.php'</script>";
+        } else {
+            echo "<script>alert('Gagal absen')</script>";
+            echo "<script>location.href='absensi.php'</script>";
+        }
+    } else {
+        echo "<script>alert('Gagal absen')</script>";
+        echo "<script>location.href='absensi.php'</script>";
+    }
+}
 
-</head>
 
-<body id="page-top">
-
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <!-- (Sidebar content stays unchanged here) -->
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-
-                <!-- Main Content -->
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Date Filter -->
-                    <div class="row mb-4">
-                        <div class="col-md-3">
-                            <input type="text" id="filterDate" class="form-control" placeholder="Select Date">
-                        </div>
-                        <div class="col-md-2">
-                            <button id="filter" class="btn btn-primary">Filter</button>
-                        </div>
-                    </div>
-
-                    <!-- DataTable Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        <tr>
-                                            <td>Tiger Nixon</td>
-                                            <td>System Architect</td>
-                                            <td>Edinburgh</td>
-                                            <td>61</td>
-                                            <td>2011/04/25</td>
-                                            <td>$320,800</td>
-                                        </tr>
-                                        <!-- Additional rows here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <!-- (Footer content stays unchanged) -->
-
+?>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Jam Absen</h6>
         </div>
-        <!-- End of Content Wrapper -->
-
+        <div class="card-body">
+            <form id="autoPostForm" method="POST" action="">
+                <div class="mb-3">
+                    <label for="nisn" class="form-label">NISN</label>
+                    <input type="text" class="form-control" name="nisn" value="<?php echo $nisn ?>" id="nisn" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="nis" class="form-label">NIS</label>
+                    <input type="text" class="form-control" name="nis" value="<?php echo $nis ?>" id="nis" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="rfid_id" class="form-label">RFID ID</label>
+                    <input type="text" class="form-control" name="rfid_id" value="<?php echo $rfid_id ?>" id="rfid_id" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="nama" class="form-label">Nama</label>
+                    <input type="text" class="form-control" name="nama" value="<?php echo $nama ?>" id="nama" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="kelas" class="form-label">Kelas</label>
+                    <input type="text" class="form-control" name="kelas" value="<?php echo $kelas ?>" id="kelas" disabled>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </form>
+        </div>
     </div>
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+</div>
 
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    alert("Tap kartu RFID terlebih dahulu untuk menampilkan detail siswa!");
+</script>
+<script>
+    // Fungsi untuk submit form secara otomatis setelah beberapa detik
+    function autoSubmitForm() {
+        setTimeout(function() {
+            document.getElementById("autoPostForm").submit(); // Submit form
+        }, 5000); // Tunda selama 5 detik (5000 milidetik)
+    }
 
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-
-    <!-- Datepicker JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script>
-        $(document).ready(function() {
-            // Initialize DataTables with export buttons
-            var table = $('#dataTable').DataTable({
-                dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            });
-
-            $('#filterDate').datepicker({
-                format: 'yyyy-mm-dd',
-                autoclose: true
-            });
-
-            // Filter button click event
-            $('#filter').click(function() {
-                var selectedDate = $('#filterDate').val();
-
-                if (selectedDate != '') {
-                    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                        var date = new Date(data[4]); // Use the 5th column for date (Start date)
-
-                        if (selectedDate == data[4]) { // Compare selected date with the start date in the table
-                            return true;
-                        }
-                        return false;
-                    });
-                }
-
-                table.draw();
-            });
-        });
-    </script>
+    // Panggil fungsi saat halaman selesai dimuat
+    window.onload = autoSubmitForm;
+</script>
 
 </body>
 

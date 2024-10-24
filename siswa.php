@@ -28,7 +28,7 @@ include 'slicing/topbar.php';
 
           <tbody>
             <?php
-            $q = "SELECT * FROM siswa";
+            $q = "SELECT * FROM siswa order by kelas desc";
             $result = $conn->query($q);
             $no = 1;
             if ($result->num_rows > 0) {
