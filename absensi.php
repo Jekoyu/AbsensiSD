@@ -17,8 +17,11 @@ if ($rfid != null) {
     $q = "select * from siswa where rfid_id='$rfid_id'";
     $r = mysqli_query($conn, $q);
     $siswa = mysqli_fetch_assoc($r);
-    // echo "<pre>";
-    // print_r($siswa);
+    if ($siswa == null) {
+        echo "<script>alert('Kartu RFID tidak terdaftar!')</script>";
+        echo "<script>location.href='absensi.php'</script>";
+    }
+
     $nisn = $siswa['nisn'];
     $nis = $siswa['nis'];
     $nama = $siswa['nama'];
@@ -33,21 +36,28 @@ if ($rfid != null) {
 
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $q = "insert into absen(nisn) values('$nisn')";
+    $q = "select * from absen where rfid_id='$rfid_id' and date(time)=curdate()";
     $r = mysqli_query($conn, $q);
-    if ($r) {
-        $q1 = "delete from rfid_history where rfid_id='$rfid_id'";
-        $r1 = mysqli_query($conn, $q1);
-        if ($r1) {
-            echo "<script>alert('Berhasil absen')</script>";
-            echo "<script>location.href='absensi.php'</script>";
+    if (mysqli_num_rows($r) > 0) {
+        echo "<script>alert('Anda sudah absen hari ini')</script>";
+        echo "<script>location.href='absensi.php'</script>";
+    } else {
+        $q = "insert into absen(nisn) values('$nisn')";
+        $r = mysqli_query($conn, $q);
+        if ($r) {
+            $q1 = "delete from rfid_history where rfid_id='$rfid_id'";
+            $r1 = mysqli_query($conn, $q1);
+            if ($r1) {
+                echo "<script>alert('Berhasil absen')</script>";
+                echo "<script>location.href='absensi.php'</script>";
+            } else {
+                echo "<script>alert('Gagal absen')</script>";
+                echo "<script>location.href='absensi.php'</script>";
+            }
         } else {
             echo "<script>alert('Gagal absen')</script>";
             echo "<script>location.href='absensi.php'</script>";
         }
-    } else {
-        echo "<script>alert('Gagal absen')</script>";
-        echo "<script>location.href='absensi.php'</script>";
     }
 }
 
@@ -56,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <div class="container-fluid">
     <div class="card">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Jam Absen</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Form Absen</h6>
         </div>
         <div class="card-body">
             <form id="autoPostForm" method="POST" action="">
@@ -89,7 +99,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <!-- Bootstrap JS Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    alert("Tap kartu RFID terlebih dahulu untuk menampilkan detail siswa!");
+    let result = confirm("Tap kartu RFID terlebih dahulu melakukan absensi!");
+    if (result) {
+        console.log("Tap kartu RFID");
+    } else {
+        console.log("Cancel");
+    }
 </script>
 <script>
     // Fungsi untuk submit form secara otomatis setelah beberapa detik
@@ -99,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }, 5000); // Tunda selama 5 detik (5000 milidetik)
     }
 
-    // Panggil fungsi saat halaman selesai dimuat
+
     window.onload = autoSubmitForm;
 </script>
 

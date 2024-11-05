@@ -78,7 +78,7 @@ function tanggal_indo($tanggal)
                 $today = getdate(date("U"));
                 $t = "$today[year]-$today[mon]-$today[mday]";
                 // echo $t;
-                $q = "select nisn from absen where date(tanggal)='$t'";
+                $q = "select nisn from absen where date(tanggal)='$t' && status='hadir'";
                 $result = $conn->query($q);
                 echo $result->num_rows;
                 // $conn->close();          
@@ -107,7 +107,7 @@ function tanggal_indo($tanggal)
                     $today = getdate(date("U"));
                     $t = "$today[year]-$today[mon]-$today[mday]";
                     // echo $t;
-                    $q = "select nisn from absen where date(tanggal)='$t'";
+                    $q = "select nisn from absen where date(tanggal)='$t' && status='hadir'";
                     $result = $conn->query($q);
                     $i = $result->num_rows;
 
@@ -209,13 +209,11 @@ function tanggal_indo($tanggal)
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
               <h6 class="m-0 font-weight-bold text-primary">Profil Sekolah</h6>
               <div class="dropdown no-arrow">
-
-
               </div>
             </div>
             <!-- Card Body -->
             <div class="card-body">
-
+              <img src="img/profil.png" width="680" alt="" srcset="">
             </div>
           </div>
         </div>
@@ -234,7 +232,7 @@ function tanggal_indo($tanggal)
             <!-- Card Body -->
             <div class="card-body">
               <div class="text-center">
-                <img src="img/tutwuri.png" alt="tutwuri" sizes="400" srcset="">
+                <img src="img/tutwuri.png" alt="tutwuri" sizes="400" height="300" srcset="">
               </div>
             </div>
           </div>

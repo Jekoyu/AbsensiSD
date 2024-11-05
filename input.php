@@ -6,8 +6,8 @@ include 'slicing/nav.php';
 include 'slicing/topbar.php';
 
 // Aktifkan error reporting untuk menangkap kesalahan
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 ?>
 
@@ -29,7 +29,7 @@ ini_set('display_errors', 1);
                         <div class="row mb-3">
                             <label for="NIS" class="col-sm-2 col-form-label">NIS</label>
                             <div class="col-sm-10">
-                                <input type="number" onfocus="dkl()" name="nis" class="form-control" id="NIS" required>
+                                <input type="number" name="nis" class="form-control" id="NIS" required>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -78,7 +78,7 @@ if (isset($_POST['nis'])) {
 
         $sql = "DELETE FROM rfid_history WHERE rfid_id='$rfid_id'";
         if (mysqli_query($conn, $sql)) {
-            header("siswa.php");
+            header("Location: siswa.php");
         } else {
             echo "Error menghapus RFID: " . mysqli_error($conn);
         }
@@ -91,14 +91,23 @@ mysqli_close($conn);
 ?>
 
 <script>
-    function dkl() {
+    // Ketika halaman dimuat pertama kali
+    window.onload = function() {
+        // Mengingatkan pengguna untuk tap RFID
+        alert('Silakan tap kartu RFID terlebih dahulu sebelum melanjutkan.');
+
+        // Mengambil data RFID dari server
         fetch("http://localhost/riset/rfid/get_rfid.php")
             .then((response) => response.json())
             .then((data) => {
-                document.getElementById("rfid_id").value = data.rfid_id;
+                if (data.rfid_id) {
+                    document.getElementById("rfid_id").value = data.rfid_id;
+                } else {
+                    alert('Tidak ada data RFID yang terdeteksi. Silakan tap ulang kartu RFID.');
+                }
             })
             .catch((error) => console.error("Error fetching data:", error));
-    }
+    };
 </script>
 
 <?php

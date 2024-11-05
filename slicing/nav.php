@@ -67,11 +67,7 @@
                     <i class="fas fa-fw fa-table"></i>
                     <span>Lihat Absensi</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="jamabsensi.php">
-                    <i class="fas fa-fw fa-clock"></i>
-                    <span>Jam Absensi</span></a>
-            </li>
+
             <hr class="sidebar-divider d-none d-md-block">
 
             <!-- Sidebar Toggler (Sidebar) -->
