@@ -1,3 +1,3 @@
 <?php
 
-$school = "SMP Negeri 3 Prambanan";
+$school = "SD Negeri Ngemplak Nganti";

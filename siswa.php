@@ -28,7 +28,7 @@ include 'slicing/topbar.php';
 
           <tbody>
             <?php
-            $q = "SELECT * FROM siswa";
+            $q = "SELECT * FROM siswa order by kelas desc";
             $result = $conn->query($q);
             $no = 1;
             if ($result->num_rows > 0) {
@@ -41,7 +41,6 @@ include 'slicing/topbar.php';
                   <td><?php echo $row['nama'] ?></td>
                   <td><?php echo $row['kelas'] ?></td>
                   <td>
-                    <!-- Tombol Edit dan Delete dengan form inline -->
                     <div class="d-flex">
                       <form action="siswaedit.php" method="POST" class="mr-2">
                         <input type="hidden" name="nisn" value="<?php echo $row['nisn']; ?>">
@@ -89,12 +88,41 @@ include 'slicing/script.php';
   $(document).ready(function() {
     $('#dataTable').DataTable({
       dom: 'Bfrtip',
-      buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print'
+      buttons: [{
+          extend: 'copy',
+          exportOptions: {
+            columns: ':not(:last-child)' // Mengecualikan kolom terakhir (aksi)
+          }
+        },
+        {
+          extend: 'csv',
+          exportOptions: {
+            columns: ':not(:last-child)' // Mengecualikan kolom terakhir (aksi)
+          }
+        },
+        {
+          extend: 'excel',
+          exportOptions: {
+            columns: ':not(:last-child)' // Mengecualikan kolom terakhir (aksi)
+          }
+        },
+        {
+          extend: 'pdf',
+          exportOptions: {
+            columns: ':not(:last-child)' // Mengecualikan kolom terakhir (aksi)
+          }
+        },
+        {
+          extend: 'print',
+          exportOptions: {
+            columns: ':not(:last-child)' // Mengecualikan kolom terakhir (aksi)
+          }
+        }
       ]
     });
   });
 </script>
+
 
 </body>
 
