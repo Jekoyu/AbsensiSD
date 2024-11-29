@@ -97,7 +97,7 @@ mysqli_close($conn);
         alert('Silakan tap kartu RFID terlebih dahulu sebelum melanjutkan.');
 
         // Mengambil data RFID dari server
-        fetch("http://localhost/riset/rfid/get_rfid.php")
+        fetch("http://localhost/AbsensiSD/get_rfid.php")
             .then((response) => response.json())
             .then((data) => {
                 if (data.rfid_id) {

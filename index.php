@@ -117,10 +117,13 @@ function tanggal_indo($tanggal)
 
                     // echo $all;
                     // echo $i;
+                   if($all !=0){
                     $val =  100 / $all * $i;
                     echo  $val . "%";
                     // $conn->close();          
-
+                   }else{
+                    echo     $val =  0;   
+                   }
                     echo "</div></div>
                 <div class='col'>
                   <div class='progress progress-sm mr-2'>
