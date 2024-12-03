@@ -5,7 +5,12 @@ include 'slicing/nav.php';
 include 'slicing/topbar.php';
 include 'db.php';
 
-$q = "select rfid_id from rfid_history order by time desc limit 1";
+$q = "SELECT rfid_id 
+FROM rfid_history 
+WHERE time >= NOW() - INTERVAL 1 HOUR 
+ORDER BY time DESC 
+LIMIT 1;
+";
 $r = mysqli_query($conn, $q);
 $rfid = mysqli_fetch_assoc($r);
 
@@ -42,21 +47,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "<script>alert('Anda sudah absen hari ini')</script>";
         echo "<script>location.href='absensi.php'</script>";
     } else {
-        $q = "insert into absen(nisn) values('$nisn')";
+        $q = "insert into absen(nisn,tanggal) values('$nisn',curdate())";
         $r = mysqli_query($conn, $q);
         if ($r) {
             $q1 = "delete from rfid_history where rfid_id='$rfid_id'";
             $r1 = mysqli_query($conn, $q1);
             if ($r1) {
                 echo "<script>alert('Berhasil absen')</script>";
-                echo "<script>location.href='absensi.php'</script>";
+                echo "<script>location.href='daftarabsensi.php'</script>";
             } else {
                 echo "<script>alert('Gagal absen')</script>";
-                echo "<script>location.href='absensi.php'</script>";
+                echo "<script>location.href='daftarabsensi.php'</script>";
             }
         } else {
             echo "<script>alert('Gagal absen')</script>";
-            echo "<script>location.href='absensi.php'</script>";
+            echo "<script>location.href='daftarabsensi.php'</script>";
         }
     }
 }
@@ -96,14 +101,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
 </div>
 
-<!-- Bootstrap JS Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     let result = confirm("Tap kartu RFID terlebih dahulu melakukan absensi!");
     if (result) {
         console.log("Tap kartu RFID");
     } else {
-        console.log("Cancel");
+        window.location.href = "siswa.php"
     }
 </script>
 <script>
@@ -111,7 +115,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     function autoSubmitForm() {
         setTimeout(function() {
             document.getElementById("autoPostForm").submit(); // Submit form
-        }, 5000); // Tunda selama 5 detik (5000 milidetik)
+            window.location.href = "daftarabsensi.php"; 
+        }, 2000); // Tunda selama 5 detik (5000 milidetik)
     }
 
 

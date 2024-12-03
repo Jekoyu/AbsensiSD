@@ -4,11 +4,6 @@ include 'env.php';
 include 'slicing/head.php';
 include 'slicing/nav.php';
 include 'slicing/topbar.php';
-
-// Aktifkan error reporting untuk menangkap kesalahan
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
-
 ?>
 
 <div class="container-fluid">
@@ -59,44 +54,57 @@ include 'slicing/topbar.php';
 </div>
 
 <?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nis'])) {
+    $nis = $_POST['nis'];
+    $nisn = $_POST['nisn'];
+    $rfid_id = $_POST['rfid_id'];
+    $nama = $_POST['nama'];
+    $kelas = $_POST['kelas'];
 
-if (isset($_POST['nis'])) {
-    // echo "<pre>";
-    // print_r($_POST);
-    // echo "</pre>";
+    // Cek apakah RFID sudah ada di database
+    $check = $conn->prepare("SELECT * FROM siswa WHERE rfid_id = ?");
+    $check->bind_param("s", $rfid_id);
+    $check->execute();
+    $result = $check->get_result();
 
-    $nis = mysqli_real_escape_string($conn, $_POST['nis']);
-    $nisn = mysqli_real_escape_string($conn, $_POST['nisn']);
-    $rfid_id = mysqli_real_escape_string($conn, $_POST['rfid_id']);
-    $nama = mysqli_real_escape_string($conn, $_POST['nama']);
-    $kelas = mysqli_real_escape_string($conn, $_POST['kelas']);
-
-
-    $q = "INSERT INTO siswa (NISN, NIS, rfid_id, nama, kelas) VALUES ('$nisn', '$nis', '$rfid_id', '$nama', '$kelas')";
-    if (mysqli_query($conn, $q)) {
-        echo "Data berhasil ditambahkan";
-
-        $sql = "DELETE FROM rfid_history WHERE rfid_id='$rfid_id'";
-        if (mysqli_query($conn, $sql)) {
-            header("Location: siswa.php");
-        } else {
-            echo "Error menghapus RFID: " . mysqli_error($conn);
-        }
+    if ($result->num_rows > 0) {
+        // RFID sudah digunakan
+        echo '<script>
+                alert("RFID sudah terdaftar untuk siswa lain. Silakan gunakan kartu RFID yang berbeda.");
+              </script>';
     } else {
-        echo "Error menambahkan data siswa: " . mysqli_error($conn);
+        // Menambahkan data siswa
+        $q = $conn->prepare("INSERT INTO siswa (NISN, NIS, rfid_id, nama, kelas) VALUES (?, ?, ?, ?, ?)");
+        $q->bind_param("sssss", $nisn, $nis, $rfid_id, $nama, $kelas);
+        if ($q->execute()) {
+            // Menghapus data RFID dari history
+            $sql = $conn->prepare("DELETE FROM rfid_history WHERE rfid_id = ?");
+            $sql->bind_param("s", $rfid_id);
+            if ($sql->execute()) {
+                echo '<script>
+                        alert("Data berhasil ditambahkan!");
+                        window.location.href = "siswa.php"; 
+                      </script>';
+            } else {
+                echo "Error menghapus RFID dari history: " . $conn->error;
+            }
+        } else {
+            echo "Error menambahkan data siswa: " . $conn->error;
+        }
+
+        $q->close();
+        $sql->close();
     }
+
+    $check->close();
 }
 
 mysqli_close($conn);
 ?>
 
 <script>
-    // Ketika halaman dimuat pertama kali
     window.onload = function() {
-        // Mengingatkan pengguna untuk tap RFID
         alert('Silakan tap kartu RFID terlebih dahulu sebelum melanjutkan.');
-
-        // Mengambil data RFID dari server
         fetch("http://localhost/AbsensiSD/get_rfid.php")
             .then((response) => response.json())
             .then((data) => {

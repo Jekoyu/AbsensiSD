@@ -4,6 +4,10 @@ include 'db.php';
 // Pastikan konten respons berupa JSON
 header('Content-Type: application/json');
 
+if ($_SERVER['CONTENT_TYPE'] !== 'application/x-www-form-urlencoded') {
+    echo json_encode(['status' => 'Error', 'message' => 'Invalid Content-Type']);
+    exit;
+}
 // Validasi metode request dan parameter
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rfid'])) {
     if (!$conn) {
