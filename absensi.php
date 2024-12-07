@@ -24,7 +24,7 @@ if ($rfid != null) {
     $siswa = mysqli_fetch_assoc($r);
     if ($siswa == null) {
         echo "<script>alert('Kartu RFID tidak terdaftar!')</script>";
-        echo "<script>location.href='absensi.php'</script>";
+        echo "<script>location.href='input.php'</script>";
     }
 
     $nisn = $siswa['nisn'];
@@ -112,15 +112,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </script>
 <script>
     // Fungsi untuk submit form secara otomatis setelah beberapa detik
-    function autoSubmitForm() {
-        setTimeout(function() {
-            document.getElementById("autoPostForm").submit(); // Submit form
-            window.location.href = "daftarabsensi.php"; 
-        }, 2000); // Tunda selama 5 detik (5000 milidetik)
-    }
+    // function autoSubmitForm() {
+    //     setTimeout(function() {
+    //         document.getElementById("autoPostForm").submit(); // Submit form
+    //         window.location.href = "daftarabsensi.php"; 
+    //     }, 2000); // Tunda selama 5 detik (5000 milidetik)
+    // }
 
 
-    window.onload = autoSubmitForm;
+    // window.onload = autoSubmitForm;
 </script>
 
 </body>

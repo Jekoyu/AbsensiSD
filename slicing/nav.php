@@ -67,6 +67,11 @@
                     <i class="fas fa-fw fa-table"></i>
                     <span>Lihat Absensi</span></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="pilihrekap.php">
+                <i class="fa fa-book" aria-hidden="true"></i>
+                    <span>Rekap Absensi</span></a>
+            </li>
 
             <hr class="sidebar-divider d-none d-md-block">
 
